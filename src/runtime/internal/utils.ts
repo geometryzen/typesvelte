@@ -1,6 +1,6 @@
 import { Readable } from 'svelte/store';
 
-export function noop() {}
+export function noop() { }
 
 export const identity = x => x;
 
@@ -36,7 +36,7 @@ export function is_function(thing: any): thing is Function {
 	return typeof thing === 'function';
 }
 
-export function safe_not_equal(a, b) {
+export function safe_not_equal(a: unknown, b: unknown): boolean {
 	return a != a ? b == b : a !== b || ((a && typeof a === 'object') || typeof a === 'function');
 }
 
@@ -166,7 +166,7 @@ export function compute_slots(slots) {
 
 export function once(fn) {
 	let ran = false;
-	return function(this: any, ...args) {
+	return function (this: any, ...args) {
 		if (ran) return;
 		ran = true;
 		fn.call(this, ...args);

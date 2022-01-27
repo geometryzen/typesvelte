@@ -1,8 +1,32 @@
 import { custom_event } from './dom';
+import { Fragment } from './Component'
 
-export let current_component;
+interface T$$ {
+	dirty?: number[];
+	ctx?: null | any;
+	bound?: ((value: unknown) => unknown)[];
+	update?: () => void;
+	callbacks: any;
+	after_update: any[];
+	props?: Record<string, 0 | string>;
+	fragment?: null | false | Fragment;
+	not_equal?: any;
+	before_update: any[];
+	context: Map<any, any>;
+	on_mount: any[];
+	on_destroy: any[];
+	skip_bound?: boolean;
+	on_disconnect?: any[];
+	root?: Element | ShadowRoot
+}
 
-export function set_current_component(component) {
+export interface LifecycleComponent {
+	$$: T$$;
+}
+
+export let current_component: LifecycleComponent;
+
+export function set_current_component(component: LifecycleComponent) {
 	current_component = component;
 }
 
@@ -55,17 +79,17 @@ export function getContext<T>(key): T {
 }
 
 export function getAllContexts<T extends Map<any, any> = Map<any, any>>(): T {
-	return get_current_component().$$.context;
+	return get_current_component().$$.context as T;
 }
 
 export function hasContext(key): boolean {
-	return get_current_component().$$.context.has(key);	
+	return get_current_component().$$.context.has(key);
 }
 
 // TODO figure out if we still want to support
 // shorthand events, or if we want to implement
 // a real bubbling mechanism
-export function bubble(component, event) {
+export function bubble(component: LifecycleComponent, event) {
 	const callbacks = component.$$.callbacks[event.type];
 
 	if (callbacks) {

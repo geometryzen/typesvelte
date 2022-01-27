@@ -2,8 +2,26 @@ import { is_promise } from './utils';
 import { check_outros, group_outros, transition_in, transition_out } from './transitions';
 import { flush } from './scheduler';
 import { get_current_component, set_current_component } from './lifecycle';
+import { Fragment } from './Component';
 
-export function handle_promise(promise, info) {
+export interface HandlePromiseInfo {
+	token: unknown;
+	resolved: unknown;
+	ctx: unknown[];
+	current: unknown;
+	block: any;
+	blocks: Fragment[];
+	anchor: unknown;
+	mount(): unknown;
+	then: unknown;
+	catch: unknown;
+	value: unknown;
+	pending: unknown;
+	error: unknown;
+	hasCatch: unknown;l
+}
+
+export function handle_promise(promise, info: HandlePromiseInfo) {
 	const token = info.token = {};
 
 	function update(type, index, key?, value?) {

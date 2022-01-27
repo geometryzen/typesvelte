@@ -1,8 +1,8 @@
-import { add_render_callback, flush, schedule_update, dirty_components } from './scheduler';
+import { children, detach, end_hydrating, start_hydrating } from './dom';
 import { current_component, set_current_component } from './lifecycle';
-import { blank_object, is_empty, is_function, run, run_all, noop } from './utils';
-import { children, detach, start_hydrating, end_hydrating } from './dom';
+import { add_render_callback, dirty_components, flush, schedule_update } from './scheduler';
 import { transition_in } from './transitions';
+import { blank_object, is_empty, is_function, noop, run, run_all } from './utils';
 
 /**
  * INTERNAL, DO NOT USE. Code may change at any time.
@@ -22,26 +22,27 @@ export interface Fragment {
 	/* outro   */ o: (local: any) => void;
 	/* destroy */ d: (detaching: 0 | 1) => void;
 }
+
 interface T$$ {
 	dirty: number[];
 	ctx: null | any;
-	bound: any;
+	bound: ((value: unknown) => unknown)[];
 	update: () => void;
 	callbacks: any;
 	after_update: any[];
 	props: Record<string, 0 | string>;
 	fragment: null | false | Fragment;
-	not_equal: any;
+	not_equal: (a: unknown, b: unknown) => boolean;
 	before_update: any[];
 	context: Map<any, any>;
 	on_mount: any[];
 	on_destroy: any[];
 	skip_bound: boolean;
 	on_disconnect: any[];
-	root:Element | ShadowRoot
+	root: Element | ShadowRoot
 }
 
-export function bind(component, name, callback) {
+export function bind(component, name, callback): void {
 	const index = component.$$.props[name];
 	if (index !== undefined) {
 		component.$$.bound[index] = callback;
@@ -49,11 +50,11 @@ export function bind(component, name, callback) {
 	}
 }
 
-export function create_component(block) {
+export function create_component(block: Fragment): void {
 	block && block.c();
 }
 
-export function claim_component(block, parent_nodes) {
+export function claim_component(block: Fragment, parent_nodes) {
 	block && block.l(parent_nodes);
 }
 
@@ -95,7 +96,7 @@ export function destroy_component(component, detaching) {
 	}
 }
 
-function make_dirty(component, i) {
+function make_dirty(component, i: number): void {
 	if (component.$$.dirty[0] === -1) {
 		dirty_components.push(component);
 		schedule_update();
@@ -104,7 +105,25 @@ function make_dirty(component, i) {
 	component.$$.dirty[(i / 31) | 0] |= (1 << (i % 31));
 }
 
-export function init(component, options, instance, create_fragment, not_equal, props, append_styles, dirty = [-1]) {
+export interface InitComponent {
+	$$: T$$;
+}
+
+export interface InitOptions {
+	target: Element;
+	context?: unknown;
+	hydrate?: unknown;
+	props?: unknown;
+	intro?: unknown;
+	anchor?: unknown;
+	customElement?: unknown;
+}
+
+export interface InitInstance {
+	(component: unknown, options: unknown, third: unknown): unknown;
+}
+
+export function init(component: InitComponent, options: InitOptions, instance: InitInstance | null, create_fragment: (ctx: unknown) => false | Fragment, not_equal: (a: unknown, b: unknown) => boolean, props, append_styles?: (root: Element | ShadowRoot) => void, dirty = [-1]) {
 	const parent_component = current_component;
 	set_current_component(component);
 
@@ -124,7 +143,7 @@ export function init(component, options, instance, create_fragment, not_equal, p
 		on_disconnect: [],
 		before_update: [],
 		after_update: [],
-		context: new Map(options.context || (parent_component ? parent_component.$$.context : [])),
+		context: new Map(options.context || (parent_component ? parent_component.$$.context as any : [])),
 
 		// everything else
 		callbacks: blank_object(),
@@ -138,7 +157,7 @@ export function init(component, options, instance, create_fragment, not_equal, p
 	let ready = false;
 
 	$$.ctx = instance
-		? instance(component, options.props || {}, (i, ret, ...rest) => {
+		? instance(component, options.props || {}, (i: number, ret, ...rest) => {
 			const value = rest.length ? rest[0] : ret;
 			if ($$.ctx && not_equal($$.ctx[i], $$.ctx[i] = value)) {
 				if (!$$.skip_bound && $$.bound[i]) $$.bound[i](value);
@@ -167,7 +186,7 @@ export function init(component, options, instance, create_fragment, not_equal, p
 			$$.fragment && $$.fragment!.c();
 		}
 
-		if (options.intro) transition_in(component.$$.fragment);
+		if (options.intro) transition_in(component.$$.fragment as Fragment);
 		mount_component(component, options.target, options.anchor, options.customElement);
 		end_hydrating();
 		flush();

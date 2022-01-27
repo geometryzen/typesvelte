@@ -26,7 +26,7 @@ export default function dom(
 	// prevent fragment being created twice (#1063)
 	if (options.customElement) block.chunks.create.push(b`this.c = @noop;`);
 
-	const body = [];
+	const body: Node[][] = [];
 
 	if (renderer.file_var) {
 		const file = component.file ? x`"${component.file}"` : x`undefined`;
@@ -72,7 +72,7 @@ export default function dom(
 		// contains a mixture of Blocks and Nodes
 		if ((block as Block).render) return (block as Block).render();
 		return block;
-	}));
+	}) as any);
 
 	if (options.dev && !options.hydratable) {
 		block.chunks.claim.push(
@@ -109,10 +109,10 @@ export default function dom(
 				${uses_rest && !uses_props && x`$$props = @assign(@assign({}, $$props), @exclude_internal_props($$new_props))`}
 				${uses_rest && renderer.invalidate('$$restProps', x`$$restProps = ${compute_rest}`)}
 				${writable_props.map(prop =>
-					b`if ('${prop.export_name}' in ${$$props}) ${renderer.invalidate(prop.name, x`${prop.name} = ${$$props}.${prop.export_name}`)};`
-				)}
+			b`if ('${prop.export_name}' in ${$$props}) ${renderer.invalidate(prop.name, x`${prop.name} = ${$$props}.${prop.export_name}`)};`
+		)}
 				${component.slots.size > 0 &&
-				b`if ('$$scope' in ${$$props}) ${renderer.invalidate('$$scope', x`$$scope = ${$$props}.$$scope`)};`}
+			b`if ('$$scope' in ${$$props}) ${renderer.invalidate('$$scope', x`$$scope = ${$$props}.$$scope`)};`}
 			}
 		`
 		: null;
@@ -249,8 +249,8 @@ export default function dom(
 				${$$props} => {
 					${uses_props && renderer.invalidate('$$props', x`$$props = @assign(@assign({}, $$props), $$new_props)`)}
 					${injectable_vars.map(
-						v => b`if ('${v.name}' in $$props) ${renderer.invalidate(v.name, x`${v.name} = ${$$props}.${v.name}`)};`
-					)}
+				v => b`if ('${v.name}' in $$props) ${renderer.invalidate(v.name, x`${v.name} = ${$$props}.${v.name}`)};`
+			)}
 				}
 			`;
 
@@ -564,7 +564,7 @@ export default function dom(
 
 		declaration.body.body.push(...accessors);
 
-		body.push(declaration);
+		body.push(declaration as any);
 
 		if (component.tag != null) {
 			body.push(b`
@@ -601,7 +601,7 @@ export default function dom(
 
 		declaration.body.body.push(...accessors);
 
-		body.push(declaration);
+		body.push(declaration as any);
 	}
 
 	return { js: flatten(body), css };

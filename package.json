@@ -1,7 +1,7 @@
 {
   "name": "typesvelte",
-  "version": "1.0.1",
-  "description": "Cybernetically enhanced web apps",
+  "version": "1.0.3",
+  "description": "Experimental Svelte with types",
   "module": "index.mjs",
   "main": "index",
   "files": [
