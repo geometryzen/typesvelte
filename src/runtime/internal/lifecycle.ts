@@ -1,10 +1,10 @@
 import { custom_event } from './dom';
-import { Fragment } from './Component'
+import { Fragment } from './Component';
 
 interface T$$ {
 	dirty?: number[];
 	ctx?: null | any;
-	bound?: ((value: unknown) => unknown)[];
+	bound?: Array<((value: unknown) => unknown)>;
 	update?: () => void;
 	callbacks: any;
 	after_update: any[];

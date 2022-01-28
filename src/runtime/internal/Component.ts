@@ -26,7 +26,7 @@ export interface Fragment {
 interface T$$ {
 	dirty: number[];
 	ctx: null | any;
-	bound: ((value: unknown) => unknown)[];
+	bound: Array<((value: unknown) => unknown)>;
 	update: () => void;
 	callbacks: any;
 	after_update: any[];
