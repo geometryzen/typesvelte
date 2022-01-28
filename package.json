@@ -1,6 +1,6 @@
 {
   "name": "typesvelte",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "Experimental Svelte with types",
   "module": "index.mjs",
   "main": "index",

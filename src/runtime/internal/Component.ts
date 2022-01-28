@@ -8,16 +8,16 @@ import { blank_object, is_empty, is_function, noop, run, run_all } from './utils
  * INTERNAL, DO NOT USE. Code may change at any time.
  */
 export interface Fragment {
-	key: string | null;
-	first: null;
+	key?: string | null;
+	first?: null;
 	/* create  */ c: () => void;
-	/* claim   */ l: (nodes: any) => void;
-	/* hydrate */ h: () => void;
+	/* claim   */ l?: (nodes: any) => void;
+	/* hydrate */ h?: () => void;
 	/* mount   */ m: (target: HTMLElement, anchor: any) => void;
 	/* update  */ p: (ctx: any, dirty: any) => void;
-	/* measure */ r: () => void;
-	/* fix     */ f: () => void;
-	/* animate */ a: () => void;
+	/* measure */ r?: () => void;
+	/* fix     */ f?: () => void;
+	/* animate */ a?: () => void;
 	/* intro   */ i: (local: any) => void;
 	/* outro   */ o: (local: any) => void;
 	/* destroy */ d: (detaching: 0 | 1) => void;
