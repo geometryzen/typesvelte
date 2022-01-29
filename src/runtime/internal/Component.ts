@@ -13,7 +13,7 @@ export interface Fragment {
 	/* create  */ c: () => void;
 	/* claim   */ l?: (nodes: any) => void;
 	/* hydrate */ h?: () => void;
-	/* mount   */ m: (target: HTMLElement, anchor: any) => void;
+	/* mount   */ m: (target: Element | ShadowRoot, anchor: Element) => void;
 	/* update  */ p: (ctx: any, dirty: any) => void;
 	/* measure */ r?: () => void;
 	/* fix     */ f?: () => void;
@@ -42,7 +42,7 @@ interface T$$ {
 	root: Element | ShadowRoot
 }
 
-export function bind(component, name, callback): void {
+export function bind(component: SvelteComponent, name: string, callback: (context: unknown) => void): void {
 	const index = component.$$.props[name];
 	if (index !== undefined) {
 		component.$$.bound[index] = callback;
@@ -54,11 +54,18 @@ export function create_component(block: Fragment): void {
 	block && block.c();
 }
 
-export function claim_component(block: Fragment, parent_nodes) {
+export function claim_component(block: Fragment, parent_nodes): void {
 	block && block.l(parent_nodes);
 }
 
-export function mount_component(component, target, anchor, customElement) {
+/**
+ * 
+ * @param component 
+ * @param target 
+ * @param anchor 
+ * @param customElement 
+ */
+export function mount_component(component: SvelteComponent, target: Element | ShadowRoot, anchor: Element, customElement?: Element): void {
 	const { fragment, on_mount, on_destroy, after_update } = component.$$;
 
 	fragment && fragment.m(target, anchor);
@@ -82,7 +89,7 @@ export function mount_component(component, target, anchor, customElement) {
 	after_update.forEach(add_render_callback);
 }
 
-export function destroy_component(component, detaching) {
+export function destroy_component(component: SvelteComponent, detaching: 0 | 1): void {
 	const $$ = component.$$;
 	if ($$.fragment !== null) {
 		run_all($$.on_destroy);
@@ -96,7 +103,7 @@ export function destroy_component(component, detaching) {
 	}
 }
 
-function make_dirty(component, i: number): void {
+function make_dirty(component: SvelteComponent, i: number): void {
 	if (component.$$.dirty[0] === -1) {
 		dirty_components.push(component);
 		schedule_update();
@@ -105,25 +112,21 @@ function make_dirty(component, i: number): void {
 	component.$$.dirty[(i / 31) | 0] |= (1 << (i % 31));
 }
 
-export interface InitComponent {
-	$$: T$$;
-}
-
 export interface InitOptions {
 	target: Element;
 	context?: unknown;
 	hydrate?: unknown;
 	props?: unknown;
 	intro?: unknown;
-	anchor?: unknown;
-	customElement?: unknown;
+	anchor?: Element;
+	customElement?: Element;
 }
 
 export interface InitInstance {
 	(component: unknown, options: unknown, third: unknown): unknown;
 }
 
-export function init(component: InitComponent, options: InitOptions, instance: InitInstance | null, create_fragment: (ctx: unknown) => false | Fragment, not_equal: (a: unknown, b: unknown) => boolean, props, append_styles?: (root: Element | ShadowRoot) => void, dirty = [-1]) {
+export function init(component: SvelteComponent, options: InitOptions, instance: InitInstance | null, create_fragment: (ctx: unknown) => false | Fragment, not_equal: (a: unknown, b: unknown) => boolean, props, append_styles?: (root: Element | ShadowRoot) => void, dirty = [-1]) {
 	const parent_component = current_component;
 	set_current_component(component);
 
@@ -257,7 +260,7 @@ export class SvelteComponent {
 	$$: T$$;
 	$$set?: ($$props: any) => void;
 
-	$destroy() {
+	$destroy(): void {
 		destroy_component(this, 1);
 		this.$destroy = noop;
 	}
