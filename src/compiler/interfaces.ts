@@ -41,14 +41,14 @@ interface DebugTag extends BaseNode {
 }
 
 export type DirectiveType = 'Action'
-| 'Animation'
-| 'Binding'
-| 'Class'
-| 'StyleDirective'
-| 'EventHandler'
-| 'Let'
-| 'Ref'
-| 'Transition';
+	| 'Animation'
+	| 'Binding'
+	| 'Class'
+	| 'StyleDirective'
+	| 'EventHandler'
+	| 'Let'
+	| 'Ref'
+	| 'Transition';
 
 interface BaseDirective extends BaseNode {
 	type: DirectiveType;
@@ -88,16 +88,16 @@ export interface Transition extends BaseExpressionDirective {
 export type Directive = BaseDirective | BaseExpressionDirective | Transition;
 
 export type TemplateNode = Text
-| ConstTag
-| DebugTag
-| MustacheTag
-| BaseNode
-| Element
-| Attribute
-| SpreadAttribute
-| Directive
-| Transition
-| Comment;
+	| ConstTag
+	| DebugTag
+	| MustacheTag
+	| BaseNode
+	| Element
+	| Attribute
+	| SpreadAttribute
+	| Directive
+	| Transition
+	| Comment;
 
 export interface Parser {
 	readonly template: string;
@@ -160,16 +160,32 @@ export type CssHashGetter = (args: {
 
 export interface CompileOptions {
 	format?: ModuleFormat;
+	/**
+	 * Determines the name of the component. If not provided, the name will be computed from the filename.
+	 */
 	name?: string;
+	/**
+	 * The name of the source file. Used in rendering to build the source map. May determine the component name if the name property is not provided.
+	 */
 	filename?: string;
 	generate?: 'dom' | 'ssr' | false;
 	errorMode?: 'throw' | 'warn';
 	varsReport?: 'full' | 'strict' | false;
-
+	/**
+	 * A prior source map that allows composition of source maps?
+	 */
 	sourcemap?: object | string;
 	enableSourcemap?: EnableSourcemap;
+	/**
+	 * Used to compute the source map file name.
+	 */
 	outputFilename?: string;
 	cssOutputFilename?: string;
+	/**
+	 * Determines the name used when writing the module names for import or export.
+	 * e.g. 'svelte/internal'.
+	 * Defaults to 'svelte'.
+	 */
 	sveltePath?: string;
 
 	dev?: boolean;
@@ -178,6 +194,9 @@ export interface CompileOptions {
 	hydratable?: boolean;
 	legacy?: boolean;
 	customElement?: boolean;
+	/**
+	 * Determines the tag associated with a component. Defaults to the name.
+	 */
 	tag?: string;
 	css?: boolean;
 	loopGuardTimeout?: number;

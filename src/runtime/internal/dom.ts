@@ -125,7 +125,7 @@ function init_hydrate(target: NodeEx) {
 	}
 }
 
-export function append(target: Node, node: Node) {
+export function append(target: Node, node: Node): void {
 	target.appendChild(node);
 }
 
@@ -133,7 +133,7 @@ export function append_styles(
 	target: Node,
 	style_sheet_id: string,
 	styles: string
-) {
+): void {
 	const append_styles_to = get_root_for_style(target);
 
 	if (!append_styles_to.getElementById(style_sheet_id)) {
@@ -154,7 +154,7 @@ export function get_root_for_style(node: Node): ShadowRoot | Document {
 	return node.ownerDocument;
 }
 
-export function append_empty_stylesheet(node: Node) {
+export function append_empty_stylesheet(node: Node): CSSStyleSheet {
 	const style_element = element('style') as HTMLStyleElement;
 	append_stylesheet(get_root_for_style(node), style_element);
 	return style_element.sheet as CSSStyleSheet;
@@ -164,7 +164,7 @@ function append_stylesheet(node: ShadowRoot | Document, style: HTMLStyleElement)
 	append((node as Document).head || node, style);
 }
 
-export function append_hydration(target: NodeEx, node: NodeEx) {
+export function append_hydration(target: NodeEx, node: NodeEx): void {
 	if (is_hydrating) {
 		init_hydrate(target);
 
@@ -190,11 +190,11 @@ export function append_hydration(target: NodeEx, node: NodeEx) {
 	}
 }
 
-export function insert(target: Node, node: Node, anchor?: Node) {
+export function insert(target: Node, node: Node, anchor?: Node): void {
 	target.insertBefore(node, anchor || null);
 }
 
-export function insert_hydration(target: NodeEx, node: NodeEx, anchor?: NodeEx) {
+export function insert_hydration(target: NodeEx, node: NodeEx, anchor?: NodeEx): void {
 	if (is_hydrating && !anchor) {
 		append_hydration(target, node);
 	} else if (node.parentNode !== target || node.nextSibling != anchor) {
@@ -202,7 +202,7 @@ export function insert_hydration(target: NodeEx, node: NodeEx, anchor?: NodeEx) 
 	}
 }
 
-export function detach(node: Node) {
+export function detach(node: Node): void {
 	node.parentNode.removeChild(node);
 }
 
@@ -323,12 +323,12 @@ export function set_custom_element_data(node, prop, value) {
 	}
 }
 
-export function xlink_attr(node, attribute, value) {
+export function xlink_attr(node: Element, attribute: string, value: string): void {
 	node.setAttributeNS('http://www.w3.org/1999/xlink', attribute, value);
 }
 
-export function get_binding_group_value(group, __value, checked) {
-	const value = new Set();
+export function get_binding_group_value<T>(group: Array<{ checked: unknown; __value: T }>, __value: T, checked: unknown): T[] {
+	const value = new Set<T>();
 	for (let i = 0; i < group.length; i += 1) {
 		if (group[i].checked) value.add(group[i].__value);
 	}

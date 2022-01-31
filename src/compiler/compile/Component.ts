@@ -1088,7 +1088,7 @@ export default class Component {
 
 						this.replace(b`
 							${node.declarations.length ? node : null}
-							${ props.length > 0 && b`let { ${ props } } = $$props;`}
+							${props.length > 0 && b`let { ${props} } = $$props;`}
 							${inserts}
 						` as any);
 						return this.skip();
@@ -1472,7 +1472,7 @@ function process_component_options(component: Component, nodes) {
 
 	const node = nodes.find(node => node.name === 'svelte:options');
 
-	function get_value(attribute, {code, message}) {
+	function get_value(attribute, { code, message }) {
 		const { value } = attribute;
 		const chunk = value[0];
 
@@ -1580,7 +1580,7 @@ function get_basename(filename: string) {
 	return filename.split(/[/\\]/).pop();
 }
 
-function get_sourcemap_source_filename(compile_options: CompileOptions) {
+function get_sourcemap_source_filename(compile_options: CompileOptions): string {
 	if (!compile_options.filename) return null;
 
 	return compile_options.outputFilename

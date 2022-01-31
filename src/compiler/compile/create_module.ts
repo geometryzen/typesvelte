@@ -36,7 +36,7 @@ export default function create_module(
 	return formatter(program, name, banner, sveltePath, internal_path, helpers, globals, imports, module_exports, exports_from);
 }
 
-function edit_source(source, sveltePath) {
+function edit_source(source: string, sveltePath: string): string {
 	return source === 'svelte' || source.startsWith('svelte/')
 		? source.replace('svelte', sveltePath)
 		: source;
@@ -93,8 +93,8 @@ function esm(
 	const internal_globals = get_internal_globals(globals, helpers);
 
 	// edit user imports
-	function rewrite_import(node) {
-		const value = edit_source(node.source.value, sveltePath);
+	function rewrite_import(node: ImportDeclaration | ExportNamedDeclaration): void {
+		const value = edit_source(node.source.value as string, sveltePath);
 		if (node.source.value !== value) {
 			node.source.value = value;
 			node.source.raw = null;
@@ -163,7 +163,7 @@ function cjs(
 	const internal_globals = get_internal_globals(globals, helpers);
 
 	const user_requires = imports.map(node => {
-		const init = x`require("${edit_source(node.source.value, sveltePath)}")`;
+		const init = x`require("${edit_source(node.source.value as string, sveltePath)}")`;
 		if (node.specifiers.length === 0) {
 			return b`${init};`;
 		}
@@ -194,7 +194,7 @@ function cjs(
 	const exports = module_exports.map(x => b`exports.${{ type: 'Identifier', name: x.as }} = ${{ type: 'Identifier', name: x.name }};`);
 
 	const user_exports_from = exports_from.map(node => {
-		const init = x`require("${edit_source(node.source.value, sveltePath)}")`;
+		const init = x`require("${edit_source(node.source.value as string, sveltePath)}")`;
 		return node.specifiers.map(specifier => {
 			return b`exports.${specifier.exported} = ${init}.${specifier.local};`;
 		});
